@@ -4,7 +4,7 @@ import InputField from '../InputField/inputField';
 import SelectField from '../SelectField/selectField';
 import { fetchStates, fetchCepData } from '../../utils/api';
 import { validateForm } from '../../utils/formValidation';
-import { StyledButton, StyledForm } from './registrationForm.styles';
+import { LocationCepDataWrapper, StyledButton, StyledForm } from './registrationForm.styles';
 interface RegistrationFormProps {}
 
 interface State {
@@ -148,14 +148,14 @@ const RegistrationForm: React.FC<RegistrationFormProps> = () => {
             placeholder="Digite o CEP" />
 
           {cepData && (
-            <div>
+            <LocationCepDataWrapper>
               <p>Dados da localidade:</p>
               <p>CEP: {cepData.cep}</p>
               <p>Logradouro: {cepData.logradouro}</p>
               <p>Bairro: {cepData.bairro}</p>
               <p>Cidade: {cepData.localidade}</p>
               <p>Estado: {cepData.uf}</p>
-            </div>
+            </LocationCepDataWrapper>
           )}
         </>
       )}

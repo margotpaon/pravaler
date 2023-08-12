@@ -49,7 +49,23 @@ appearance: none;
 background: url("data:image/svg+xml;utf8,<svg fill='black' height='24' viewBox='0 0 24 24' width='24' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/><path d='M0 0h24v24H0z' fill='none'/></svg>") no-repeat right 10px center;
 margin-bottom: 16px;
 `
+const LocationCepDataWrapper = styled.div`
+  width:100%;
+  margin: 20px 0;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+
+  p {
+    margin: 8px 0;
+  }
+
+  p:first-child {
+    font-weight: bold;
+  }
+`;
 export {
     StyledForm,
-    StyledButton
+    StyledButton,
+    LocationCepDataWrapper
 }
