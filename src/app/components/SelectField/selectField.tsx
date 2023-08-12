@@ -1,4 +1,5 @@
 import React, { ChangeEventHandler } from 'react';
+import SelectFieldWrapper from './selectField.styles';
 
 interface Option {
   label: string;
@@ -14,16 +15,16 @@ interface SelectFieldProps {
 
 const SelectField: React.FC<SelectFieldProps> = ({ label, value, onChange, options }) => {
   return (
-    <div>
-      <label>{label}</label>
-      <select value={value} onChange={onChange}>
+    <SelectFieldWrapper>
+      <label htmlFor={`select-${label}`}>{label}</label>
+      <select id={`select-${label}`} value={value} onChange={onChange}>
         {options.map(option => (
           <option key={option.value} value={option.value}>
             {option.label}
           </option>
         ))}
       </select>
-    </div>
+    </SelectFieldWrapper>
   );
 };
 

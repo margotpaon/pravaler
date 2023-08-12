@@ -1,0 +1,55 @@
+import styled from 'styled-components';
+const StyledForm = styled.form`
+    display: flex;
+    flex-direction: column;
+    max-width: 400px;
+    margin: 0 auto;
+
+    @media (max-width: 768px) {
+    max-width: 100%;
+    padding: 0 20px;
+    }
+`;
+
+const StyledButton = styled.button`
+    padding: 10px;
+    font-size: 16px;
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.2s ease-in-out;
+
+    &:hover {
+    background-color: #0056b3;
+    }
+    @media (max-width: 768px) {
+    font-size: 14px;
+    padding: 8px 16px;
+    }
+`;
+const StyledInput = styled.input`
+    width: 100%;
+    padding: 10px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    appearance: none;
+    background: url("data:image/svg+xml;utf8,<svg fill='black' height='24' viewBox='0 0 24 24' width='24' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/><path d='M0 0h24v24H0z' fill='none'/></svg>") no-repeat right 10px center;
+    margin-bottom: 16px;
+`
+const StyledSelect = styled.select`
+width: 100%;
+padding: 10px;
+font-size: 16px;
+border: 1px solid #ccc;
+border-radius: 4px;
+appearance: none;
+background: url("data:image/svg+xml;utf8,<svg fill='black' height='24' viewBox='0 0 24 24' width='24' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/><path d='M0 0h24v24H0z' fill='none'/></svg>") no-repeat right 10px center;
+margin-bottom: 16px;
+`
+export {
+    StyledForm,
+    StyledButton
+}

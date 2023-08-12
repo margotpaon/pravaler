@@ -1,8 +1,10 @@
 "use client"
 import React, { useState, FormEventHandler, ChangeEventHandler, useEffect } from 'react';
-import InputField from './inputField';
-import SelectField from './selectField';
-
+import InputField from '../InputField/inputField'; 
+import SelectField from '../SelectField/selectField';
+import { fetchStates, fetchCepData } from '../../utils/api';
+import { validateForm } from '../../utils/formValidation';
+import { StyledButton, StyledForm } from './registrationForm.styles';
 interface RegistrationFormProps {}
 
 interface State {
@@ -13,6 +15,15 @@ interface State {
 interface Option {
     label: string;
     value: string;
+}
+
+interface FormValues {
+  name: string;
+  cpf: string;
+  email: string;
+  phone: string;
+  selectedOption: string;
+  cep: string;
 }
 
 const RegistrationForm: React.FC<RegistrationFormProps> = () => {
@@ -27,61 +38,28 @@ const RegistrationForm: React.FC<RegistrationFormProps> = () => {
   const [cepData, setCepData] = useState<any>(null);
 
   useEffect(() => {
-    fetchStates();
+    fetchStates(setStates);
   }, []);
-
-  const fetchStates = async () => {
-    try {
-      const response = await fetch('https://servicodados.ibge.gov.br/api/v1/localidades/estados');
-      const data = await response.json();
-      setStates(data);
-    } catch (error) {
-      console.error('Erro ao buscar estados:', error);
-    }
-  };
-
-  const fetchCepData = async (cep: string) => {
-    try {
-      const response = await fetch(`https://viacep.com.br/ws/${cep}/json/`);
-      const data = await response.json();
-      setCepData(data);
-    } catch (error) {
-      console.error('Erro ao buscar dados de CEP:', error);
-    }
-  };
-
+    
   // Função para manipular o envio do formulário
   const handleSubmit: FormEventHandler<HTMLFormElement> = event => {
     event.preventDefault();
 
-    const errors: string[] = [];
-
-    if (!name.trim()) {
-      errors.push('O campo Nome é obrigatório.');
-    }
-
-    if (!cpf.match(/^\d{3}\.\d{3}\.\d{3}-\d{2}$/)) {
-      errors.push('CPF inválido. Digite no formato: 123.456.789-00.');
-    }
-
-    if (!email.match(/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/)) {
-      errors.push('E-mail inválido. Digite um endereço de e-mail válido.');
-    }
-
-    if (!phone.match(/^\d{10,11}$/)) {
-      errors.push('Número de telefone inválido. Digite apenas números (10 ou 11 dígitos).');
-    }
-
-    if (selectedOption === 'option2' && !cep.match(/^\d{8}$/)) {
-      errors.push('CEP inválido. Digite um CEP válido com 8 dígitos.');
-    }
-
+    const values: FormValues = {
+      name,
+      cpf,
+      email,
+      phone,
+      selectedOption,
+      cep,
+    };
+  
+    const errors = validateForm(values);
+  
     if (errors.length > 0) {
       alert(errors.join('\n'));
       return;
     }
-
-    // Se passou nas validações, você pode prosseguir com o envio dos dados
   };
 
   const selectOptions: Option[] = [
@@ -100,14 +78,14 @@ const RegistrationForm: React.FC<RegistrationFormProps> = () => {
     const newCep = e.target.value;
     setCep(newCep);
     if (newCep.length === 8) {
-      fetchCepData(newCep);
+      fetchCepData(newCep, setCepData);
     } else {
       setCepData(null);
     }
   };
 
   return (
-    <form onSubmit={handleSubmit}>
+    <StyledForm onSubmit={handleSubmit}>
       <InputField
         label="Nome"
         value={name}
@@ -115,7 +93,7 @@ const RegistrationForm: React.FC<RegistrationFormProps> = () => {
         type="text"
         required
         placeholder="Digite seu nome completo"
-      />
+        data-testid="Nome" />
 
       <InputField
         label="CPF"
@@ -125,7 +103,7 @@ const RegistrationForm: React.FC<RegistrationFormProps> = () => {
         required
         pattern="[0-9]{3}\.[0-9]{3}\.[0-9]{3}-[0-9]{2}"
         placeholder="123.456.789-00"
-      />
+        data-testid="CPF" />
 
       <InputField
         label="E-mail"
@@ -134,7 +112,7 @@ const RegistrationForm: React.FC<RegistrationFormProps> = () => {
         type="email"
         required
         placeholder="Digite seu e-mail"
-      />
+        data-testid="E-mail" />
 
       <InputField
         label="Telefone"
@@ -144,22 +122,20 @@ const RegistrationForm: React.FC<RegistrationFormProps> = () => {
         required
         pattern="[0-9]{10,11}"
         placeholder="Digite seu telefone"
-      />
+        data-testid="Telefone" />
 
       <SelectField
         label="Selecione uma opção"
         value={selectedOption}
         onChange={handleOptionChange}
-        options={selectOptions}
-      />
+        options={selectOptions} />
 
       {selectedOption === 'option1' && (
         <SelectField
           label="Estado"
           value={selectedState}
           onChange={e => setSelectedState(e.target.value)}
-          options={states.map(state => ({ label: state.nome, value: state.sigla }))}
-        />
+          options={states.map(state => ({ label: state.nome, value: state.sigla }))} />
       )}
 
       {selectedOption === 'option2' && (
@@ -169,8 +145,7 @@ const RegistrationForm: React.FC<RegistrationFormProps> = () => {
             value={cep}
             onChange={handleCepChange}
             type="text"
-            placeholder="Digite o CEP"
-          />
+            placeholder="Digite o CEP" />
 
           {cepData && (
             <div>
@@ -185,8 +160,10 @@ const RegistrationForm: React.FC<RegistrationFormProps> = () => {
         </>
       )}
 
-      <button type="submit">Enviar</button>
-    </form>
+      <StyledButton type="submit">Enviar</StyledButton>
+    </StyledForm>
+      
+  
   );
 };
 

@@ -1,6 +1,4 @@
-import Image from 'next/image'
-import styles from './page.module.css'
-import RegistrationForm from './components/registrationForm'
+import RegistrationForm from './components/RegistrationForm/registrationForm'
 
 export default function Home() {
   return (

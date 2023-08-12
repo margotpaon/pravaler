@@ -1,4 +1,5 @@
 import React, { ChangeEventHandler } from 'react';
+import InputFieldWrapper from './inputField.styles';
 
 interface InputFieldProps {
   label: string;
@@ -8,12 +9,13 @@ interface InputFieldProps {
   required?: boolean;
   pattern?: string;
   placeholder?: string;
+  inputTestId?: string;
 }
 
-const InputField: React.FC<InputFieldProps> = ({ label, value, onChange, type, required, pattern, placeholder }) => {
+const InputField: React.FC<InputFieldProps> = ({ label, value, onChange, type, required, pattern, placeholder, inputTestId }) => {
   return (
-    <div>
-      <label>{label}</label>
+    <InputFieldWrapper>
+      <label htmlFor={inputTestId || label}>{label}</label>
       <input
         type={type}
         value={value}
@@ -21,8 +23,10 @@ const InputField: React.FC<InputFieldProps> = ({ label, value, onChange, type, r
         required={required}
         pattern={pattern}
         placeholder={placeholder}
+        id={inputTestId || label}
+        data-testid={inputTestId || label}
       />
-    </div>
+    </InputFieldWrapper>
   );
 };
 
