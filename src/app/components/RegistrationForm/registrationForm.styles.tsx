@@ -51,7 +51,7 @@ margin-bottom: 16px;
 `
 const LocationCepDataWrapper = styled.div`
   width:100%;
-  margin: 20px 0;
+  margin-bottom: 20px;
   padding: 10px;
   border: 1px solid #ccc;
   border-radius: 4px;
