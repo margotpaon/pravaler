@@ -1,15 +1,6 @@
-import { ref, push, update, DatabaseReference, remove, get, child } from 'firebase/database';
+import { ref, push, update, DatabaseReference, remove, onValue } from 'firebase/database';
 import { db } from '../../../firebase';
-
-
-interface FormValues {
-  name: string;
-  cpf: string;
-  email: string;
-  phone: string;
-  cep: string;
-  selectedOption: string;
-}
+import { Cliente, FormValues } from '../components/RegistrationForm/registrationForm'
 
 let id: string | null = null;
 
@@ -23,10 +14,18 @@ export const saveFormDataToFirebase = async (cli_data: FormValues): Promise<{ su
     }
 
     const updates: { [key: string]: any } = {};
-    updates[`/clientes/${id}`] = cli_data;
+    updates[`/clientes/${id}`] = {
+      nome: cli_data.name,
+      email: cli_data.email,
+      cpf: cli_data.cpf,
+      phone: cli_data.phone,
+      cepData: cli_data.cepData,
+      opcao: cli_data.selectedOption,
+      estado: cli_data.estado,
+    };
     const cli_ref: DatabaseReference = ref(db);
-
-    await update(cli_ref, updates);
+    console.log(updates)
+    update(cli_ref, updates);
     
     return { success: true, message: 'Cliente Cadastrado' };
   } catch (error: any) {
@@ -34,19 +33,21 @@ export const saveFormDataToFirebase = async (cli_data: FormValues): Promise<{ su
   }
 };
 
-export const removeData = () =>{
-  if(!id) return {sucess:false, message: 'Cliente inválido'} 
-  try {
-    const cli_ref: DatabaseReference = ref(db, `/clientes/${id}`);
-    remove(cli_ref);
-    id = null;
-
-    return { success: true, message: 'Cliente removido com sucesso' };
-  } catch (error: any) {
-    return { success: false, message: `Falha ao remover cliente: ${error.message}` };
-  }
-}
-export const fetchDataFromFirebase = async () => {
-  console.log("Dados lidos com sucesso")
-  const dbRef = ref(db);
+export const fetchClientes = (setClientes: React.Dispatch<React.SetStateAction<Cliente[] | undefined>>) => {
+  const refClientes = ref(db, 'clientes');
+  onValue(refClientes, snapshot => {
+    const resultadoClientes = Object.entries<Cliente>(snapshot.val() ?? {}).map(([chave, valor]) => ({
+      chave,
+      nome: valor.nome,
+      email: valor.email,
+      cpf: valor.cpf,
+      phone: valor.phone,
+      cep: valor.cep,
+      opcao: valor.opcao,
+      estado: valor.estado,
+      cepData: valor.cepData
+    }));
+    console.log(resultadoClientes)
+    setClientes(resultadoClientes);
+  });
 };

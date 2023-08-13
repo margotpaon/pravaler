@@ -5,10 +5,7 @@ import SelectField from '../SelectField/selectField';
 import { fetchStates, fetchCepData } from '../../utils/api';
 import { validateForm } from '../../utils/formValidation';
 import { LocationCepDataWrapper, StyledButton, StyledForm } from './registrationForm.styles';
-import { saveFormDataToFirebase } from '../../utils/firebaseUtils';
-import { ViewerContainer } from '../DataViewer/dataViewer.styles';
-import { ref, onValue } from '@firebase/database';
-import { db } from '../../../../firebase';
+import { fetchClientes, saveFormDataToFirebase } from '../../utils/firebaseUtils';
 
 interface RegistrationFormProps {}
 
@@ -21,23 +18,39 @@ interface Option {
     label: string;
     value: string;
 }
-interface FormValues {
+export interface FormValues {
   name: string;
   cpf: string;
   email: string;
   phone: string;
   selectedOption: string;
   cep: string;
+  estado:string;
+  cepData: {
+    cep: string;
+    logradouro: string;
+    bairro: string;
+    localidade: string;
+    uf: string;
+  };
 }
 
-type Clientes = {
-  chave: string,
-  nome: string,
-  phone:string,
-  email:string,
-  cpf:string, 
-  cep:string,
-  opcao:string
+export interface Cliente {
+  chave: string;
+  nome: string;
+  phone:string;
+  email:string;
+  cpf:string;
+  cep:string;
+  opcao:string;
+  estado:string;
+  cepData: {
+    cep: string;
+    logradouro: string;
+    bairro: string;
+    localidade: string;
+    uf: string;
+  };
 }
 
 
@@ -50,26 +63,19 @@ const RegistrationForm: React.FC<RegistrationFormProps> = () => {
   const [selectedState, setSelectedState] = useState('');
   const [states, setStates] = useState<State[]>([]);
   const [cep, setCep] = useState('');
+  const [estado, setEstado] = useState('');
   const [cepData, setCepData] = useState<any>(null);
   const [formDataId, setFormDataId] = useState<string | null>(null);
-  const [clientes, setClientes] = useState<Clientes[]>();
+  const [clientes, setClientes] = useState<Cliente[] | undefined>(undefined);
 
   useEffect(() => {
     fetchStates(setStates);
-    const refClientes = ref(db, 'clientes');
-    onValue(refClientes, snapshot => {
-      const resultadoClientes = Object.entries<Clientes>(snapshot.val() ?? {}).map(([chave, valor]) => ({
-        chave,
-        nome: valor.nome,
-        email: valor.email,
-        cpf: valor.cpf,
-        phone: valor.phone,
-        cep: valor.cep,
-        opcao: valor.opcao
-      }))
-      setClientes(resultadoClientes)
-    });
+    fetchClientes(setClientes);
   }, []);
+
+  const fetchClientData = () => {
+    fetchClientes(setClientes);
+  };
   
     
   // Função para manipular o envio do formulário
@@ -83,6 +89,8 @@ const RegistrationForm: React.FC<RegistrationFormProps> = () => {
       phone,
       selectedOption,
       cep,
+      estado,
+      cepData,
     };
   
     const errors = validateForm(values);
@@ -96,6 +104,7 @@ const RegistrationForm: React.FC<RegistrationFormProps> = () => {
       const result = await saveFormDataToFirebase(values);
       const id = result.success ? 'cliente' : null; 
       setFormDataId(id); 
+      fetchClientData();
     } catch (error) {
       console.error('Erro ao salvar dados:', error);
     }
@@ -111,6 +120,10 @@ const RegistrationForm: React.FC<RegistrationFormProps> = () => {
   // Função para manipular a alteração da opção selecionada
   const handleOptionChange: ChangeEventHandler<HTMLSelectElement> = e => {
     setSelectedOption(e.target.value);
+  };
+
+  const handleEstadoChange: ChangeEventHandler<HTMLSelectElement> = e => {
+    setEstado(e.target.value);
   };
 
   // Função para manipular a alteração do CEP
@@ -174,8 +187,8 @@ const RegistrationForm: React.FC<RegistrationFormProps> = () => {
         {selectedOption === 'option1' && (
           <SelectField
             label="Estado"
-            value={selectedState}
-            onChange={e => setSelectedState(e.target.value)}
+            value={estado}
+            onChange={e => setEstado(e.target.value)}
             options={states.map(state => ({ label: state.nome, value: state.sigla }))} />
         )}
 
@@ -204,14 +217,23 @@ const RegistrationForm: React.FC<RegistrationFormProps> = () => {
         <StyledButton type="submit">Enviar</StyledButton>
       </StyledForm>
       <div>
-        {clientes.map(cliente => (
+        {clientes?.map(cliente => (
           <div key={cliente.chave}>
             <p>{cliente.nome}</p>
             <p>{cliente.email}</p>
             <p>{cliente.phone}</p>
             <p>{cliente.cep}</p>
             <p>{cliente.cpf}</p>
-            <p>{cliente.opcao}</p>
+            <p>{cliente.estado}</p>
+            {cliente.cepData && (
+               <div>
+               <p>CEP: {cliente.cepData.cep}</p>
+               <p>Logradouro: {cliente.cepData.logradouro}</p>
+               <p>Bairro: {cliente.cepData.bairro}</p>
+               <p>Cidade: {cliente.cepData.localidade}</p>
+               <p>Estado: {cliente.cepData.uf}</p>
+             </div>
+            )}
           </div>
         ))}
       </div>
