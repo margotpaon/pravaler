@@ -4,8 +4,8 @@ import InputField from '../InputField/inputField';
 import SelectField from '../SelectField/selectField';
 import { fetchStates, fetchCepData } from '../../utils/api';
 import { validateForm } from '../../utils/formValidation';
-import { LocationCepDataWrapper, StyledButton, StyledForm } from './registrationForm.styles';
-import { fetchClientes, saveFormDataToFirebase } from '../../utils/firebaseUtils';
+import { DeleteButton, EditButton, LocationCepDataWrapper, StyledButton, StyledForm, WrapperContent } from './registrationForm.styles';
+import { deleteData, fetchClientes, saveFormDataToFirebase } from '../../utils/firebaseUtils';
 
 interface RegistrationFormProps {}
 
@@ -67,6 +67,7 @@ const RegistrationForm: React.FC<RegistrationFormProps> = () => {
   const [cepData, setCepData] = useState<any>(null);
   const [formDataId, setFormDataId] = useState<string | null>(null);
   const [clientes, setClientes] = useState<Cliente[] | undefined>(undefined);
+  
 
   useEffect(() => {
     fetchStates(setStates);
@@ -76,9 +77,8 @@ const RegistrationForm: React.FC<RegistrationFormProps> = () => {
   const fetchClientData = () => {
     fetchClientes(setClientes);
   };
-  
-    
-  // Função para manipular o envio do formulário
+
+
   const handleSubmit: FormEventHandler<HTMLFormElement> = async event => {
     event.preventDefault();
 
@@ -138,7 +138,7 @@ const RegistrationForm: React.FC<RegistrationFormProps> = () => {
   };
 
   return (
-    <>
+    <WrapperContent>
       <StyledForm onSubmit={handleSubmit}>
         <InputField
           label="Nome"
@@ -214,30 +214,36 @@ const RegistrationForm: React.FC<RegistrationFormProps> = () => {
           </>
         )}
 
-        <StyledButton type="submit">Enviar</StyledButton>
+        <StyledButton type="submit">Cadastrar</StyledButton>
       </StyledForm>
       <div>
+        <h1>Dados Cadastrados</h1>
         {clientes?.map(cliente => (
-          <div key={cliente.chave}>
-            <p>{cliente.nome}</p>
-            <p>{cliente.email}</p>
-            <p>{cliente.phone}</p>
-            <p>{cliente.cep}</p>
-            <p>{cliente.cpf}</p>
-            <p>{cliente.estado}</p>
-            {cliente.cepData && (
-               <div>
-               <p>CEP: {cliente.cepData.cep}</p>
-               <p>Logradouro: {cliente.cepData.logradouro}</p>
-               <p>Bairro: {cliente.cepData.bairro}</p>
-               <p>Cidade: {cliente.cepData.localidade}</p>
-               <p>Estado: {cliente.cepData.uf}</p>
-             </div>
-            )}
-          </div>
+          <LocationCepDataWrapper key={cliente.chave}>
+            <div key={cliente.chave}> 
+              <p>{cliente.nome}</p>
+              <p>{cliente.email}</p>
+              <p>{cliente.phone}</p>
+              <p>{cliente.cep}</p>
+              <p>{cliente.cpf}</p>
+              <p>{cliente.estado}</p>
+              {cliente.cepData && (
+                <>
+                  <p>CEP: {cliente.cepData.cep}</p>
+                  <p>Logradouro: {cliente.cepData.logradouro}</p>
+                  <p>Bairro: {cliente.cepData.bairro}</p>
+                  <p>Cidade: {cliente.cepData.localidade}</p>
+                  <p>Estado: {cliente.cepData.uf}</p>
+                </>
+              )}
+              <DeleteButton onClick={() => deleteData(cliente.chave)}>Excluir</DeleteButton>
+            </div>
+          </LocationCepDataWrapper>
         ))}
-      </div>
-    </>
+        
+  
+      </div>  
+    </WrapperContent>
   );
 };
 

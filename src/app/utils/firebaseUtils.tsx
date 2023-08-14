@@ -1,6 +1,7 @@
-import { ref, push, update, DatabaseReference, remove, onValue } from 'firebase/database';
+import { ref, push, update, DatabaseReference, remove, onValue, child } from 'firebase/database';
 import { db } from '../../../firebase';
 import { Cliente, FormValues } from '../components/RegistrationForm/registrationForm'
+import { setDefaultEventParameters } from 'firebase/analytics';
 
 let id: string | null = null;
 
@@ -51,3 +52,9 @@ export const fetchClientes = (setClientes: React.Dispatch<React.SetStateAction<C
     setClientes(resultadoClientes);
   });
 };
+
+export const deleteData = (reference: string) =>{
+  const refClientes = ref(db, `clientes/${reference}`);
+  remove(refClientes);
+}
+

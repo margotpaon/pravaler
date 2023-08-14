@@ -1,9 +1,18 @@
 import styled from 'styled-components';
+const WrapperContent = styled.div`
+  display:flex;
+  flex-direction:row;
+  gap:20px;
+  padding:40px;
+  @media (max-width: 768px) {
+    flex-direction:column;
+  }
+`
 const StyledForm = styled.form`
     display: flex;
     flex-direction: column;
-    max-width: 400px;
-    margin: 0 auto;
+    min-width: 400px;
+    margin: 0 60px 0 0;
 
     @media (max-width: 768px) {
     max-width: 100%;
@@ -20,7 +29,7 @@ const StyledButton = styled.button`
     border-radius: 4px;
     cursor: pointer;
     transition: background-color 0.2s ease-in-out;
-
+    
     &:hover {
     background-color: #0056b3;
     }
@@ -64,8 +73,29 @@ const LocationCepDataWrapper = styled.div`
     font-weight: bold;
   }
 `;
+const EditButton = styled.button`
+  background-color: #3498db;
+  color: white;
+  padding: 5px 10px;
+  border: none;
+  border-radius: 5px;
+  margin-right: 10px;
+  cursor: pointer;
+`;
+
+const DeleteButton = styled.button`
+  background-color: #e74c3c;
+  color: white;
+  padding: 5px 10px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+`;
 export {
     StyledForm,
     StyledButton,
-    LocationCepDataWrapper
+    LocationCepDataWrapper, 
+    DeleteButton,
+    EditButton,
+    WrapperContent
 }
